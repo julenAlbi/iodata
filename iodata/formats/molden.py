@@ -24,8 +24,7 @@ Many QC codes can write out Molden files, e.g. `Molpro <https://www.molpro.net/>
 in mind that several of these write incorrect versions of the file format, but these
 errors are corrected when loading them with IOData.
 """
-
-
+import re
 from typing import Tuple, Union, TextIO
 import copy
 
@@ -140,22 +139,22 @@ def _load_low(lit: LineIterator) -> dict:
             # writen by PSI4 and ORCA.
             pure_angmoms.add(5)
         # title
-        elif line == '[title]':
+        elif re.search(r'^\[title\]', line, re.IGNORECASE):
             title = next(lit).strip()
         # atoms
-        elif line.startswith('[atoms]'):
+        elif re.search(r'^\[atoms\]', line, re.IGNORECASE):
             if 'au' in line:
                 cunit = 1.0
             elif 'angs' in line:
                 cunit = angstrom
             atnums, atcorenums, atcoords = _load_helper_atoms(lit, cunit)
         # we only support Gaussian-type orbitals (gto's)
-        elif line == '[gto]':
+        elif re.search(r'^\[gto\]', line, re.IGNORECASE):
             obasis = _load_helper_obasis(lit)
-        elif line == '[sto]':
+        elif re.search(r'^\[sto\]', line, re.IGNORECASE):
             lit.error('Slater-type orbitals are not supported by IODATA.')
         # molecular-orbital coefficients.
-        elif line == '[mo]':
+        elif re.search(r'^\[mo\]', line, re.IGNORECASE):
             data_alpha, data_beta = _load_helper_coeffs(lit)
             occsa, coeffsa, energiesa, irrepsa = data_alpha
             occsb, coeffsb, energiesb, irrepsb = data_beta
