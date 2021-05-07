@@ -208,7 +208,9 @@ def _load_helper_atoms(lit: LineIterator, cunit: float) -> \
             # Go back to previous line and stop
             lit.back(line)
             break
-        atnums.append(sym2num[words[0].title()])
+        element = re.search(r'^[a-z]+', words[0], re.IGNORECASE)[0]
+        assert element
+        atnums.append(sym2num[element.title()])
         atcorenums.append(float(words[2]))
         atcoords.append([float(words[3]), float(words[4]), float(words[5])])
     atnums = np.array(atnums, int)
