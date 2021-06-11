@@ -41,6 +41,12 @@ def _find_format_modules():
             format_module = import_module('iodata.formats.' + module_info.name)
             if hasattr(format_module, 'PATTERNS'):
                 result[module_info.name] = format_module
+    try:
+        import iodata.formats.molden
+        format_module = import_module('iodata.formats.molden')
+        result['molden'] = format_module
+    except ModuleNotFoundError:
+        pass
     return result
 
 
